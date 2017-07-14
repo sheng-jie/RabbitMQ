@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 namespace Send {
     class Program {
     public static void Main () {
-    //1. 创建基于本地的连接工厂
+    //1.创建基于本地的连接工厂
             var factory = new ConnectionFactory () { HostName = "localhost" };
             //2. 建立连接
             using (var connection = factory.CreateConnection ()) {
