@@ -1,0 +1,8 @@
+D:\Coding\RabbitMQ\NewTask\bin\Debug\netcoreapp1.1\NewTask.deps.json
+D:\Coding\RabbitMQ\NewTask\bin\Debug\netcoreapp1.1\NewTask.runtimeconfig.json
+D:\Coding\RabbitMQ\NewTask\bin\Debug\netcoreapp1.1\NewTask.runtimeconfig.dev.json
+D:\Coding\RabbitMQ\NewTask\bin\Debug\netcoreapp1.1\NewTask.dll
+D:\Coding\RabbitMQ\NewTask\bin\Debug\netcoreapp1.1\NewTask.pdb
+D:\Coding\RabbitMQ\NewTask\obj\Debug\netcoreapp1.1\NewTask.AssemblyInfo.cs
+D:\Coding\RabbitMQ\NewTask\obj\Debug\netcoreapp1.1\NewTask.dll
+D:\Coding\RabbitMQ\NewTask\obj\Debug\netcoreapp1.1\NewTask.pdb
