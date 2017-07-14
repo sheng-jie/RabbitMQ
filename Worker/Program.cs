@@ -13,8 +13,14 @@ namespace Worker {
             using (var connection = factory.CreateConnection ()) {
                 //3. 创建频道
                 using (var channel = connection.CreateModel ()) {
-                    //4. 申明队列
-                    channel.QueueDeclare (queue: "task_queue", durable : false, exclusive : false, autoDelete : false, arguments : null);
+                    //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
+                    channel.QueueDeclare (queue: "work_queue", durable : true, exclusive : false, autoDelete : false, arguments : null);
+                    //将消息标记为持久性 - 将IBasicProperties.SetPersistent设置为true
+                    var properties = channel.CreateBasicProperties();
+                    properties.Persistent=true;
+                    
+                    //设置prefetchCount : 1来告知RabbitMQ，在未收到消费端的消息确认时，不再分发消息，也就确保了当消费端处于忙碌状态时，不再分配任务。
+                    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
                     //5. 构造消费者实例
                     var consumer = new EventingBasicConsumer (channel);
@@ -35,7 +41,7 @@ namespace Worker {
                     //9. 启动消费者
                     //autoAck:true；自动进行消息确认，当消费端接收到消息后，就自动发送ack信号，不管消息是否正确处理完毕
                     //autoAck:false；关闭自动消息确认，通过调用BasicAck方法手动进行消息确认
-                    channel.BasicConsume (queue: "task_queue", autoAck : false, consumer : consumer);
+                    channel.BasicConsume (queue: "work_queue", autoAck : false, consumer : consumer);
 
                     Console.WriteLine (" Press [enter] to exit.");
                     Console.ReadLine ();
