@@ -16,11 +16,11 @@ namespace Worker {
                     //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
                     channel.QueueDeclare (queue: "work_queue", durable : true, exclusive : false, autoDelete : false, arguments : null);
                     //将消息标记为持久性 - 将IBasicProperties.SetPersistent设置为true
-                    var properties = channel.CreateBasicProperties();
-                    properties.Persistent=true;
-                    
+                    var properties = channel.CreateBasicProperties ();
+                    properties.Persistent = true;
+
                     //设置prefetchCount : 1来告知RabbitMQ，在未收到消费端的消息确认时，不再分发消息，也就确保了当消费端处于忙碌状态时，不再分配任务。
-                    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+                    channel.BasicQos (prefetchSize : 0, prefetchCount : 1, global : false);
 
                     //5. 构造消费者实例
                     var consumer = new EventingBasicConsumer (channel);

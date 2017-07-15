@@ -1,0 +1,8 @@
+F:\Coding\RabbitMQ\receivelogsdirect\bin\Debug\netcoreapp1.1\ReceiveLogsDirect.deps.json
+F:\Coding\RabbitMQ\receivelogsdirect\bin\Debug\netcoreapp1.1\ReceiveLogsDirect.runtimeconfig.json
+F:\Coding\RabbitMQ\receivelogsdirect\bin\Debug\netcoreapp1.1\ReceiveLogsDirect.runtimeconfig.dev.json
+F:\Coding\RabbitMQ\receivelogsdirect\bin\Debug\netcoreapp1.1\ReceiveLogsDirect.dll
+F:\Coding\RabbitMQ\receivelogsdirect\bin\Debug\netcoreapp1.1\ReceiveLogsDirect.pdb
+F:\Coding\RabbitMQ\receivelogsdirect\obj\Debug\netcoreapp1.1\ReceiveLogsDirect.AssemblyInfo.cs
+F:\Coding\RabbitMQ\receivelogsdirect\obj\Debug\netcoreapp1.1\ReceiveLogsDirect.dll
+F:\Coding\RabbitMQ\receivelogsdirect\obj\Debug\netcoreapp1.1\ReceiveLogsDirect.pdb

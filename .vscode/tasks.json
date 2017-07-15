@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/Receive/Receive.csproj"
+                "${workspaceRoot}/ReceiveLogsDirect/ReceiveLogsDirect.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"

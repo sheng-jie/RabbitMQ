@@ -1,0 +1,8 @@
+F:\Coding\RabbitMQ\emitlog\bin\Debug\netcoreapp1.1\EmitLog.deps.json
+F:\Coding\RabbitMQ\emitlog\bin\Debug\netcoreapp1.1\EmitLog.runtimeconfig.json
+F:\Coding\RabbitMQ\emitlog\bin\Debug\netcoreapp1.1\EmitLog.runtimeconfig.dev.json
+F:\Coding\RabbitMQ\emitlog\bin\Debug\netcoreapp1.1\EmitLog.dll
+F:\Coding\RabbitMQ\emitlog\bin\Debug\netcoreapp1.1\EmitLog.pdb
+F:\Coding\RabbitMQ\emitlog\obj\Debug\netcoreapp1.1\EmitLog.AssemblyInfo.cs
+F:\Coding\RabbitMQ\emitlog\obj\Debug\netcoreapp1.1\EmitLog.dll
+F:\Coding\RabbitMQ\emitlog\obj\Debug\netcoreapp1.1\EmitLog.pdb

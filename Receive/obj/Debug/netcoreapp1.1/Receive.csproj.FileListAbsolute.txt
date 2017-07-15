@@ -7,3 +7,12 @@ D:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.AssemblyInfo.cs
 D:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.dll
 D:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.pdb
 D:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.csprojResolveAssemblyReference.cache
+f:\Coding\RabbitMQ\Receive\bin\Debug\netcoreapp1.1\Receive.deps.json
+f:\Coding\RabbitMQ\Receive\bin\Debug\netcoreapp1.1\Receive.runtimeconfig.json
+f:\Coding\RabbitMQ\Receive\bin\Debug\netcoreapp1.1\Receive.runtimeconfig.dev.json
+f:\Coding\RabbitMQ\Receive\bin\Debug\netcoreapp1.1\Receive.dll
+f:\Coding\RabbitMQ\Receive\bin\Debug\netcoreapp1.1\Receive.pdb
+f:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.csprojResolveAssemblyReference.cache
+f:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.AssemblyInfo.cs
+f:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.dll
+f:\Coding\RabbitMQ\Receive\obj\Debug\netcoreapp1.1\Receive.pdb
