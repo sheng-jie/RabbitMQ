@@ -14,8 +14,6 @@ namespace RPCClient
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "rpc_queue", exclusive: false);
-
                     var correlationId = Guid.NewGuid().ToString();
                     var replyQueue = channel.QueueDeclare().QueueName;
 
@@ -23,29 +21,27 @@ namespace RPCClient
                     properties.ReplyTo = replyQueue;
                     properties.CorrelationId = correlationId;
 
-                    string message = args.Length > 0 ? $"Request fib({args[0]}." : "Request fib(30)";
-                    var body = Encoding.UTF8.GetBytes(message);
+                    string number = args.Length > 0 ? args[0] : "30";
+                    var body = Encoding.UTF8.GetBytes(number);
                     //发布消息
                     channel.BasicPublish(exchange: "", routingKey: "rpc_queue", basicProperties: properties, body: body);
 
-                    Console.WriteLine($"[*] {message}");
+                    Console.WriteLine($"[*] Request fib({number})");
 
                     // //创建消费者用于消息回调
-                    // var callbackConsumer = new EventingBasicConsumer(channel);
-                    // channel.BasicConsume(queue: replyQueue, autoAck: true, consumer: callbackConsumer);
+                    var callbackConsumer = new EventingBasicConsumer(channel);
+                    channel.BasicConsume(queue: replyQueue, autoAck: true, consumer: callbackConsumer);
 
-                    // callbackConsumer.Received += (model, ea) =>
-                    // {
-                    //     if (ea.BasicProperties.CorrelationId == correlationId)
-                    //     {
-                    //         var responseMsg = $"Get Response: {Encoding.UTF8.GetString(ea.Body)}";
+                    callbackConsumer.Received += (model, ea) =>
+                    {
+                        if (ea.BasicProperties.CorrelationId == correlationId)
+                        {
+                            var responseMsg = $"Get Response: {Encoding.UTF8.GetString(ea.Body)}";
 
-                    //         Console.WriteLine($"[x]: {responseMsg}");
-                    //     }
-                    // };
+                            Console.WriteLine($"[x]: {responseMsg}");
+                        }
+                    };
 
-
-                    Console.WriteLine("Press any key exit.");
                     Console.ReadLine();
 
                 }

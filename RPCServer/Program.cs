@@ -14,7 +14,8 @@ namespace RPCServer
             {
                 using (var channel = conection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "rpc_queue", exclusive: false);
+                    channel.QueueDeclare(queue: "rpc_queue", durable: false,
+                        exclusive: false, autoDelete: false, arguments: null);
 
                     var consumer = new EventingBasicConsumer(channel);
                     Console.WriteLine("[*] Waiting for message.");
@@ -23,24 +24,22 @@ namespace RPCServer
                     {
                         var message = Encoding.UTF8.GetString(ea.Body);
                         int n = int.Parse(message);
-                        var properties = ea.BasicProperties;
-                        int result = Fib(n);
                         Console.WriteLine($"Receive request of Fib({n})");
-                        
+                        int result = Fib(n);
+
+                        var properties = ea.BasicProperties;
                         var replyProerties = channel.CreateBasicProperties();
                         replyProerties.CorrelationId = properties.CorrelationId;
 
                         channel.BasicPublish(exchange: "", routingKey: properties.ReplyTo,
-                         basicProperties: replyProerties, body: Encoding.UTF8.GetBytes(result.ToString()));
+                            basicProperties: replyProerties, body: Encoding.UTF8.GetBytes(result.ToString()));
 
                         channel.BasicAck(ea.DeliveryTag, false);
-
-
+                        Console.WriteLine($"Return result: Fib({n})= {result}");
 
                     };
                     channel.BasicConsume(queue: "rpc_queue", autoAck: false, consumer: consumer);
 
-                    Console.WriteLine("Press any key exit.");
                     Console.ReadLine();
                 }
             }
