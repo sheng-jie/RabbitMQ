@@ -27,7 +27,7 @@ namespace NewTask
                     var body = Encoding.UTF8.GetBytes(message);
 
                     //6. 发送数据包
-                    channel.BasicPublish(exchange: "", routingKey: "work_queue", basicProperties: null, body: body);
+                    channel.BasicPublish(exchange: "", routingKey: "work_queue", basicProperties: properties, body: body);
                     Console.WriteLine(" [x] Sent {0}", message);
                 }
             }
