@@ -195,9 +195,9 @@ channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 这时你需要注意的是如果所有的消费端都处于忙碌状态，你的队列可能会被塞满。你需要注意这一点，要么添加更多的消费端，要么采取其他策略。
 
 # 4. Exchange
-细心的你也许发现上面的demo，生产者和消费者直接是通过相同队列名称进行匹配衔接的。消费者订阅某个队列，生产者创建消息发布到队列中，队列再将消息转发到订阅的消费者。这样就会有一个局限性，即消费者一次只能订阅一个队列的消息。
+细心的你也许发现上面的demo，生产者和消费者直接是通过相同队列名称进行匹配衔接的。消费者订阅某个队列，生产者创建消息发布到队列中，队列再将消息转发到订阅的消费者。这样就会有一个局限性，即消费者一次只能发送消息到某一个队列。
 
-那消费者如何才能订阅多个消息队列呢？
+那消费者如何才能发送消息到多个消息队列呢？
 RabbitMQ提供了**Exchange**，它类似于路由器的功能，它用于对消息进行路由，将消息发送到多个队列上。Exchange一方面从生产者接收消息，另一方面将消息推送到队列。但exchange必须知道如何处理接收到的消息，是将其附加到特定队列还是附加到多个队列，还是直接忽略。而这些规则由exchange type定义，exchange的原理如下图所示。
 ![Exchange](http://upload-images.jianshu.io/upload_images/2799767-0b4fba202e525745.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -205,7 +205,6 @@ RabbitMQ提供了**Exchange**，它类似于路由器的功能，它用于对消
 * direct（明确的路由规则：消费端绑定的队列名称必须和消息发布时指定的路由名称一致）
 * topic （模式匹配的路由规则：支持通配符）
 * fanout （消息广播，将消息分发到exchange上绑定的所有队列上）
-这里我们先介绍**fanout**的用法，fanout是简单的将接收到的消息分发到所有队列。
 
 下面我们就来一一这介绍它们的用法。
 
@@ -284,7 +283,70 @@ var queuename = channel.QueueDeclare ().QueueName;
 channel.QueueBind (queue : queuename, exchange: "topicEC", routingKey: "#.*.fast");
 ```
 
-# 5.总结
+# 5. RPC
+RPC——Remote Procedure Call，远程过程调用。
+那RabbitMQ如何进行远程调用呢？示意图如下：
+![RPC机制](http://upload-images.jianshu.io/upload_images/2799767-121e20f9b512c406.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+第一步，主要是进行远程调用的客户端需要指定接收远程回调的队列，并申明消费者监听此队列。
+第二步，远程调用的服务端除了要申明消费端接收远程调用请求外，还要将结果发送到客户端用来监听回调结果的队列中去。
+
+远程调用客户端：
+```
+ //申明唯一guid用来标识此次发送的远程调用请求
+ var correlationId = Guid.NewGuid().ToString();
+ //申明需要监听的回调队列
+ var replyQueue = channel.QueueDeclare().QueueName;
+ var properties = channel.CreateBasicProperties();
+ properties.ReplyTo = replyQueue;//指定回调队列
+ properties.CorrelationId = correlationId;//指定消息唯一标识
+ string number = args.Length > 0 ? args[0] : "30";
+ var body = Encoding.UTF8.GetBytes(number);
+ //发布消息
+ channel.BasicPublish(exchange: "", routingKey: "rpc_queue", basicProperties: properties, body: body);
+ Console.WriteLine($"[*] Request fib({number})");
+ // //创建消费者用于处理消息回调（远程调用返回结果）
+ var callbackConsumer = new EventingBasicConsumer(channel);
+ channel.BasicConsume(queue: replyQueue, autoAck: true, consumer: callbackConsumer);
+ callbackConsumer.Received += (model, ea) =>
+ {
+      //仅当消息回调的ID与发送的ID一致时，说明远程调用结果正确返回。
+     if (ea.BasicProperties.CorrelationId == correlationId)
+     {
+         var responseMsg = $"Get Response: {Encoding.UTF8.GetString(ea.Body)}";
+         Console.WriteLine($"[x]: {responseMsg}");
+     }
+ };
+```
+
+远程调用服务端：
+```
+//申明队列接收远程调用请求
+channel.QueueDeclare(queue: "rpc_queue", durable: false,
+    exclusive: false, autoDelete: false, arguments: null);
+var consumer = new EventingBasicConsumer(channel);
+Console.WriteLine("[*] Waiting for message.");
+//请求处理逻辑
+consumer.Received += (model, ea) =>
+{
+    var message = Encoding.UTF8.GetString(ea.Body);
+    int n = int.Parse(message);
+    Console.WriteLine($"Receive request of Fib({n})");
+    int result = Fib(n);
+    //从请求的参数中获取请求的唯一标识，在消息回传时同样绑定
+    var properties = ea.BasicProperties;
+    var replyProerties = channel.CreateBasicProperties();
+    replyProerties.CorrelationId = properties.CorrelationId;
+    //将远程调用结果发送到客户端监听的队列上
+    channel.BasicPublish(exchange: "", routingKey: properties.ReplyTo,
+        basicProperties: replyProerties, body: Encoding.UTF8.GetBytes(result.ToString()));
+    //手动发回消息确认
+    channel.BasicAck(ea.DeliveryTag, false);
+    Console.WriteLine($"Return result: Fib({n})= {result}");
+};
+channel.BasicConsume(queue: "rpc_queue", autoAck: false, consumer: consumer);
+```
+
+# 6. 总结
 基于上面的demo和对几种不同exchange路由机制的学习，我们发现RabbitMQ主要是涉及到以下几个核心概念：
 1. Publisher：生产者，消息的发送方。
 2. Connection：网络连接。
@@ -296,5 +358,8 @@ channel.QueueBind (queue : queuename, exchange: "topicEC", routingKey: "#.*.fast
 8. Broker：消息队列的服务器实体。
 9. Consumer：消费者，消息的接收方。 
 
+这次作为入门就讲到这里，下次我们来讲解下**EventBus + RabbitMQ**如何实现事件的分发。
+
 >参考资料：
 [RabbitMQ Tutorials](http://www.rabbitmq.com/getstarted.html)
+[Demo路径——RabbitMQ](https://github.com/yanshengjie/RabbitMQ)
